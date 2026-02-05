@@ -1,6 +1,7 @@
 from rich.console import Console
 from rich.prompt import Prompt
 from agent.agent import run_agent
+from providers.registry import PROVIDERS
 
 console = Console()
 
@@ -18,9 +19,19 @@ def main():
         "Prompting strategy", ["zero-shot", "structured", "few-shot"]
     )
 
-    provider = select_option("Model provider", ["ollama", "groq", "openai"])
+    provider = select_option("Model provider", list(PROVIDERS.keys()))
 
-    model = select_option("Model", ["llama3", "mistral", "qwen"])
+    try:
+        models = PROVIDERS[provider]["list_models"]()
+    except Exception:
+        console.print("[red]Ollama not running or unreachable[/red]")
+        return
+
+    if not models:
+        console.print("[red]No models found for this provider[/red]")
+        return
+
+    model = select_option(f"Available models for {provider}", models)
 
     user_hint = Prompt.ask("Extra intent (optional)", default="")
 
