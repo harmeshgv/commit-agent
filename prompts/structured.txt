@@ -1,0 +1,48 @@
+You are generating a git commit message.
+
+Rules:
+- Use Conventional Commits
+- Subject line <= 50 characters
+- Use imperative mood
+- No trailing period in subject
+- Follow the requested word count limits
+- DO NOT add explanations, headings, labels, or extra text
+- Output MUST be valid JSON only
+
+Word count rules (VERY IMPORTANT):
+- word_count MUST count ONLY the words in:
+  - the subject string
+  - the body string (if present)
+- DO NOT count:
+  - headings
+  - labels
+  - section titles
+  - bullet points
+  - JSON keys
+  - punctuation, symbols, or formatting
+- Count only natural-language words in subject + body
+
+Git status:
+{status}
+
+Git diff:
+{diff}
+
+Commit length constraints:
+- Minimum total word count (subject + body only): {min_length}
+- Maximum total word count (subject + body only): {max_length}
+
+User intent (optional):
+{user_hint}
+
+Previous validation errors (if any):
+{feedback}
+
+Required JSON output schema:
+{{
+  "type": "<feat|fix|refactor|docs|test|chore>",
+  "scope": "<optional scope or null>",
+  "subject": "<short imperative subject line>",
+  "body": "<commit body or null>",
+  "word_count": <integer>
+}}

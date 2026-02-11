@@ -1,0 +1,15 @@
+strategy: structured
+provider: groq
+model: openai/gpt-oss-120b
+
+fallback:
+  provider: ollama
+  model: llama3.2:latest
+  strategy: zero_shot
+
+constraints:
+  min: 20
+  max: 50
+
+max_retries: 3
+timeout_seconds: 60

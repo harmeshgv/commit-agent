@@ -1,0 +1,41 @@
+You are generating git commit messages as strict JSON.
+
+Rules:
+- Output JSON only
+- Use Conventional Commits
+- Subject <= 50 chars, imperative, no trailing period
+- Keep subject + body total words between {min_length} and {max_length}
+
+Example format:
+Input (summary): add retry logic to generator and improve validation feedback
+Output:
+{{
+  "type": "feat",
+  "scope": "agent",
+  "subject": "Improve retry feedback in commit generation",
+  "body": "Add targeted retry guidance and preserve validation context to improve commit message quality and reduce repeated failures.",
+  "word_count": 27
+}}
+
+Now produce output for this repository state.
+
+Git status:
+{status}
+
+Git diff:
+{diff}
+
+User intent (optional):
+{user_hint}
+
+Previous validation errors (if any):
+{feedback}
+
+Required output schema:
+{{
+  "type": "<feat|fix|refactor|docs|test|chore>",
+  "scope": "<optional scope or null>",
+  "subject": "<short imperative subject line>",
+  "body": "<commit body or null>",
+  "word_count": <integer>
+}}

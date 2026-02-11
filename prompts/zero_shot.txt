@@ -1,0 +1,29 @@
+Generate a git commit message from the repository changes below.
+
+Constraints:
+- Output valid JSON only (no prose, no markdown fences)
+- Use Conventional Commits
+- Subject must be imperative and <= 50 characters
+- No trailing period in subject
+- Total words in subject + body must be between {min_length} and {max_length}
+
+Git status:
+{status}
+
+Git diff:
+{diff}
+
+User intent (optional):
+{user_hint}
+
+Previous validation errors (if any):
+{feedback}
+
+Return exactly this JSON shape:
+{{
+  "type": "<feat|fix|refactor|docs|test|chore>",
+  "scope": "<optional scope or null>",
+  "subject": "<short imperative subject line>",
+  "body": "<commit body or null>",
+  "word_count": <integer>
+}}

@@ -1,0 +1,25 @@
+single:
+  provider: groq
+  model: llama-3.3-70b
+  strategy: structured
+  constraints:
+    min: 20
+    max: 50
+
+batch:
+  providers:
+    groq:
+      - llama-3.3-70b
+      - mixtral
+    ollama:
+      - llama3
+  strategies:
+    - structured
+    - zero_shot
+  constraints:
+    short:
+      min: 10
+      max: 25
+    medium:
+      min: 20
+      max: 50
