@@ -5,6 +5,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from config.loader import LabBatchConfig, LabSingleConfig, load_lab_config
+import time
+
+from config.loader import LabBatchConfig, LabSingleConfig, load_lab_config
 from core.logger import RunLogger
 from core.types import EngineResult
 from lab.runner import run_single_experiment
@@ -90,7 +93,9 @@ def run_batch_experiments(
     logger = RunLogger()
     rows: list[BatchExperimentResult] = []
 
-    for index, (constraint_label, single_config) in enumerate(_expand_batch_matrix(batch_config), start=1):
+    for index, (constraint_label, single_config) in enumerate(
+        _expand_batch_matrix(batch_config), start=1
+    ):
         result = run_single_experiment(
             single_config=single_config,
             max_retries=max_retries,
@@ -112,6 +117,7 @@ def run_batch_experiments(
             result=result,
         )
         rows.append(row)
+        time.sleep(1)
 
     return rows
 

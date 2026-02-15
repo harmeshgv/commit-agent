@@ -13,6 +13,7 @@ from typing import Any
 from config.loader import ConstraintConfig, ProdConfig
 from core.analyzer import read_git_context
 from core.generator import generate_commit
+from core.logger import debug_log, info_log
 from core.types import DiffContext, EngineResult
 from core.validator import validate_commit
 
@@ -62,6 +63,7 @@ def _run_target(
     retries = 0
     last_error: str | None = None
     last_violations: list[str] = []
+    last_meta: dict[str, Any] = {}
 
     while retries <= max_retries:
         generated = generate_commit(
@@ -77,6 +79,7 @@ def _run_target(
 
         if generated.commit is None:
             last_error = generated.error or "unknown"
+            last_meta = generated.meta
         else:
             validation = validate_commit(generated.commit, constraints)
             generated.commit.word_count = validation.word_count
@@ -100,6 +103,9 @@ def _run_target(
 
         retries += 1
 
+    meta: dict[str, Any] = {"provider": provider, "model": model, "strategy": strategy}
+    meta.update(last_meta)
+
     latency_ms = int((time.perf_counter() - started_at) * 1000)
     return EngineResult(
         commit=None,
@@ -107,7 +113,7 @@ def _run_target(
         retries=max_retries,
         latency_ms=latency_ms,
         error=last_error,
-        meta={"provider": provider, "model": model, "strategy": strategy},
+        meta=meta,
     )
 
 
@@ -128,8 +134,14 @@ def run_once(config: ProdConfig, intent: str | None = None, debug: bool = False)
     """
 
     constraints = _constraints_to_dict(config.constraints)
+    info_log("Reading git context...", color="cyan")
     context = read_git_context(debug=debug)
 
+    info_log(
+        "Calling primary provider...",
+        payload={"provider": config.provider, "model": config.model},
+        color="cyan",
+    )
     primary = _run_target(
         context=context,
         strategy=config.strategy,
@@ -144,8 +156,26 @@ def run_once(config: ProdConfig, intent: str | None = None, debug: bool = False)
     primary.meta["fallback_used"] = False
 
     if primary.commit is not None:
+        info_log("Commit generated successfully.", color="green")
         return primary
 
+    debug_log(debug, "primary_failed", {"error": primary.error, "meta": primary.meta})
+
+    if primary.error == "provider_error" and "GROQ_API_KEY" in primary.meta.get(
+        "reason", ""
+    ):
+        info_log(
+            "GROQ_API_KEY is not set. Please set the GROQ_API_KEY environment variable.",
+            color="red",
+        )
+        primary.error = "GROQ_API_KEY is not set."
+        return primary
+
+    info_log(
+        "Primary provider failed. Falling back to fallback provider...",
+        payload={"provider": config.fallback.provider, "model": config.fallback.model},
+        color="yellow",
+    )
     fallback = _run_target(
         context=context,
         strategy=config.fallback.strategy,
@@ -160,4 +190,10 @@ def run_once(config: ProdConfig, intent: str | None = None, debug: bool = False)
     fallback.meta["fallback_used"] = True
     fallback.meta["primary_error"] = primary.error
     fallback.meta["primary_retries"] = primary.retries
+
+    if fallback.commit is not None:
+        info_log("Commit generated successfully with fallback provider.", color="green")
+    else:
+        info_log("Fallback provider also failed.", color="red")
+
     return fallback

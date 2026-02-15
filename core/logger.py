@@ -11,7 +11,11 @@ from dataclasses import asdict
 from pathlib import Path
 from typing import Any
 
+from rich.console import Console
+
 from core.types import EngineResult, RunLogRecord
+
+console = Console()
 
 
 def debug_log(enabled: bool, event: str, payload: dict[str, Any]) -> None:
@@ -32,7 +36,33 @@ def debug_log(enabled: bool, event: str, payload: dict[str, Any]) -> None:
     if not enabled:
         return
     record = {"event": event, "payload": payload}
-    print(json.dumps(record, sort_keys=True))
+    console.print(json.dumps(record, sort_keys=True), style="dim")
+
+
+def info_log(
+    message: str,
+    payload: dict[str, Any] | None = None,
+    color: str | None = None,
+) -> None:
+    """Emit a structured info log line.
+
+    Input contract:
+    - `message`: a human-readable log message.
+    - `payload`: optional JSON-serializable details.
+    - `color`: optional color name for the message.
+
+    Output contract:
+    - No return value.
+
+    Side effects:
+    - Writes one JSON line to stdout.
+    """
+
+    style = color if color else "default"
+    console.print(f"[bold {style}]{message}[/bold {style}]", style=style)
+    if payload:
+        console.print(json.dumps(payload, indent=2, sort_keys=True), style="dim")
+
 
 
 class RunLogger:

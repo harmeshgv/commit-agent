@@ -9,10 +9,8 @@ single:
 batch:
   providers:
     groq:
-      - llama-3.3-70b
-      - mixtral
-    ollama:
-      - llama3
+      - llama-3.3-70b-versatile
+      - llama-3.1-8b-instant
   strategies:
     - structured
     - zero_shot
@@ -23,3 +21,6 @@ batch:
     medium:
       min: 20
       max: 50
+    long:
+      min: 50
+      max: 100

@@ -7,12 +7,13 @@ or model defaults.
 from __future__ import annotations
 
 import os
-
+from dotenv import load_dotenv
 import requests
 
+load_dotenv()
 GROQ_MODELS_URL = "https://api.groq.com/openai/v1/models"
 GROQ_CHAT_URL = "https://api.groq.com/openai/v1/chat/completions"
-
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 EXCLUDED_MODEL_KEYWORDS = (
     "whisper",
     "guard",
@@ -54,12 +55,11 @@ def list_models() -> list[str]:
     - Performs HTTP GET request when API key is present.
     """
 
-    api_key = os.getenv("GROQ_API_KEY")
-    if not api_key:
+    if not GROQ_API_KEY:
         return []
 
     try:
-        response = requests.get(GROQ_MODELS_URL, headers=_auth_headers(api_key), timeout=10)
+        response = requests.get(GROQ_MODELS_URL, headers=_auth_headers(GROQ_API_KEY), timeout=10)
         response.raise_for_status()
         data = response.json().get("data", [])
     except requests.RequestException:

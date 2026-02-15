@@ -186,18 +186,22 @@ def generate_commit(
         prompt = build_prompt(template, context, intent, constraints)
         if feedback:
             prompt = f"{prompt}\n\nFeedback:\n{feedback}"
+        debug_log(debug, "prompt_built", {"prompt": prompt})
         raw = call_provider(provider_name, model, prompt)
+        debug_log(debug, "provider_raw_output", {"raw": raw})
     except Exception as exc:  # noqa: BLE001
         return GeneratorOutput(commit=None, error="provider_error", meta={"reason": str(exc)})
 
     cleaned = sanitize_output(raw)
+    debug_log(debug, "provider_cleaned_output", {"cleaned": cleaned})
     parsed = safe_parse_json(cleaned)
     if parsed is None:
-        return GeneratorOutput(commit=None, error="invalid_json", meta={})
+        return GeneratorOutput(commit=None, error="invalid_json", meta={"raw": raw})
+    debug_log(debug, "provider_parsed_output", {"parsed": parsed})
 
     commit = normalize(parsed)
     if commit is None:
-        return GeneratorOutput(commit=None, error="invalid_schema", meta={})
+        return GeneratorOutput(commit=None, error="invalid_schema", meta={"parsed": parsed})
 
     debug_log(debug, "generator_success", {"provider": provider_name, "model": model})
     return GeneratorOutput(commit=commit, error=None, meta={"provider": provider_name, "model": model})
