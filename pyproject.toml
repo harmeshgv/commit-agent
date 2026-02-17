@@ -1,0 +1,31 @@
+[project]
+name = "commit-agent"
+version = "0.1.0"
+description = "AI agent for generating commit messages from staged git diffs."
+requires-python = ">=3.10"
+dependencies = [
+  "python-dotenv",
+  "pyyaml",
+  "requests",
+  "rich",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest",
+  "ruff",
+]
+
+[tool.uv]
+package = false
+
+[project.scripts]
+commit-agent = "prod.cli:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["core*", "prod*", "lab*", "config*", "providers*"]
+exclude = ["eval*", "prompts*"]

@@ -16,6 +16,20 @@ from prod.app import run_agent
 console = Console()
 
 
+def print_banner() -> None:
+    """Print the human-friendly startup banner."""
+
+    banner = r"""
+ ██████╗ ██╗████████╗██╗  ██╗██╗   ██╗██████╗        ██████╗ ██████╗ ███╗   ███╗███╗   ███╗██╗████████╗     █████╗  ██████╗ ███████╗███╗   ██╗████████╗
+██╔════╝ ██║╚══██╔══╝██║  ██║██║   ██║██╔══██╗      ██╔════╝██╔═══██╗████╗ ████║████╗ ████║██║╚══██╔══╝    ██╔══██╗██╔════╝ ██╔════╝████╗  ██║╚══██╔══╝
+██║  ███╗██║   ██║   ███████║██║   ██║██████╔╝█████╗██║     ██║   ██║██╔████╔██║██╔████╔██║██║   ██║       ███████║██║  ███╗█████╗  ██╔██╗ ██║   ██║
+██║   ██║██║   ██║   ██╔══██║██║   ██║██╔══██╗╚════╝██║     ██║   ██║██║╚██╔╝██║██║╚██╔╝██║██║   ██║       ██╔══██║██║   ██║██╔══╝  ██║╚██╗██║   ██║
+╚██████╔╝██║   ██║   ██║  ██║╚██████╔╝██████╔╝      ╚██████╗╚██████╔╝██║ ╚═╝ ██║██║ ╚═╝ ██║██║   ██║       ██║  ██║╚██████╔╝███████╗██║ ╚████║   ██║
+ ╚═════╝ ╚═╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚═════╝        ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚═╝     ╚═╝╚═╝   ╚═╝       ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═══╝   ╚═╝
+"""
+    console.print(banner)
+
+
 def main() -> None:
     """Run one production execution from YAML configuration.
 
@@ -32,6 +46,14 @@ def main() -> None:
     - Runs engine through production app.
     - Writes summary to terminal.
     """
+
+    print_banner()
+
+    choice = input("Press Enter to continue or type 'q' to quit: ")
+
+    if choice.lower() == "q":
+        print("Exiting commit-agent.")
+        exit(0)
 
     parser = argparse.ArgumentParser(description="Commit Agent")
     parser.add_argument(

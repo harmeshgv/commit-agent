@@ -18,8 +18,8 @@ This project is a Python-based AI agent that automates the creation of git commi
 
 ### Prerequisites
 
--   Python 3.8+
--   `pip` for installing dependencies.
+-   Python 3.10+
+-   `uv` installed (`https://docs.astral.sh/uv/`)
 
 ### Installation
 
@@ -29,13 +29,17 @@ This project is a Python-based AI agent that automates the creation of git commi
     cd commit-agent
     ```
 
-2.  **Install the dependencies:**
+2.  **Create environment and install dependencies with `uv`:**
     ```bash
-    pip install -r requirements.txt
+    uv venv
+    uv sync
     ```
-    *(Note: You will need to create a `requirements.txt` file. I will do that in the next step.)*
 
-3.  **Set up environment variables:**
+3.  **Install development tools (optional):**
+    ```bash
+    uv sync --extra dev
+    ```
+4.  **Set up environment variables:**
     -   Create a `.env` file in the root of the project.
     -   Add your `GROQ_API_KEY` to the `.env` file:
         ```
@@ -49,7 +53,7 @@ This project is a Python-based AI agent that automates the creation of git commi
 To run the agent in production mode, use the following command:
 
 ```bash
-python3 -m prod.cli
+uv run python -m prod.cli
 ```
 
 This will use the configuration from `config/prod.yaml` to generate a commit message for the current git diff.
@@ -59,7 +63,7 @@ This will use the configuration from `config/prod.yaml` to generate a commit mes
 To run the agent in lab mode, which is designed for experiments, you can use the `run_lab.py` script:
 
 ```bash
-python3 run_lab.py
+uv run python run_lab.py
 ```
 
 This will run the batch experiment defined in `config/lab.yaml` and save the results to `eval/runs.jsonl`.
@@ -67,7 +71,7 @@ This will run the batch experiment defined in `config/lab.yaml` and save the res
 To see a comparison of the lab run results, you can use the `show_comparison.py` script:
 
 ```bash
-python3 show_comparison.py
+uv run python show_comparison.py
 ```
 
 ## Evaluation
@@ -99,11 +103,11 @@ Contributions are welcome! Please feel free to open an issue or submit a pull re
 When contributing, please follow these guidelines:
 
 1.  **Fork the repository** and create your branch from `main`.
-2.  **Install the development dependencies** (`pip install -r requirements-dev.txt`). *(Note: You will need to create this file)*
+2.  **Install the development dependencies** (`uv sync --extra dev`).
 3.  **Make your changes** and add tests for them.
-4.  **Run the tests** (`pytest`).
-5.  **Lint your code** (`ruff check .`).
-6.  **Format your code** (`ruff format .`).
+4.  **Run the tests** (`uv run pytest`).
+5.  **Lint your code** (`uv run ruff check .`).
+6.  **Format your code** (`uv run ruff format .`).
 7.  **Submit a pull request** with a clear description of your changes.
 
 ## License
